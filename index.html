@@ -69,14 +69,15 @@
       <div class="qr-card">
         <canvas id="qrCanvas" width="480" height="480" aria-label="QR code"></canvas>
         <style>
-        /* Optional: let the canvas scale proportionally but keep aspect 1:1 */
-        #qrCanvas {
-        max-width: 480px;   /* same aspect as intrinsic */
-        width: 100%;
-        image-rendering: pixelated;
-        display: block;
-        background: #fff;
-        }
+          /* Square, responsive display from intrinsic 480x480 */
+            #qrCanvas {
+                width: 100%;
+                max-width: 480px;
+                height: auto;        /* ensure aspect 1:1 when width scales */
+                image-rendering: pixelated;
+                display: block;
+                background: #fff;
+            }
         </style>
       </div>
     </div>
@@ -100,26 +101,20 @@
 
 
     function drawToCanvasFromQRCode(qr, canvas, size) {
-    // Ensure the canvas intrinsic pixel size is square
+    // Intrinsic square pixels
     canvas.width = size;
     canvas.height = size;
 
     const ctx = canvas.getContext('2d', { alpha: false });
     ctx.imageSmoothingEnabled = false;
 
-    const count = qr._oQRCode.getModuleCount
-      ? qr._oQRCode.getModuleCount()
-      : qr.getModuleCount(); // support either QRCode.js instance or model
-
-    // Use a single cell size for both axes
-    const cell = Math.floor(size / count);
+    const count = qr._oQRCode ? qr._oQRCode.getModuleCount() : qr.getModuleCount();
+    const cell = Math.floor(size / count);          // same cell for X and Y
     const margin = Math.floor((size - cell * count) / 2);
 
-    // White background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, size, size);
 
-    // Draw modules
     ctx.fillStyle = '#000000';
     for (let r = 0; r < count; r++) {
       for (let c = 0; c < count; c++) {
