@@ -1,4 +1,4 @@
-<!-- filename: wa-qr.html -->
+<!-- filename: index.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,13 +6,24 @@
     <title>WhatsApp QR (India)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
+      /* Palette: deep navy background, softer teal accent, gentle neutrals */
       :root {
-        --bg: #0f172a;
-        --text: #e5e7eb;
-        --muted: #9ca3af;
-        --accent: #22c55e;
-        --border: #1f2937;
+        --bg: #0b1220; /* slightly deeper than before */
+        --surface: #0f172a; /* card background */
+        --surface-2: #111827; /* darker inner surface */
+        --text: #e6edf5; /* soft off-white */
+        --muted: #9aa3b2; /* cooler gray for hints */
+        --border: #1f2a37; /* card borders */
+        --accent: #2dd4bf; /* softer teal (was harsh green) */
+        --accent-dark: #14b8a6; /* deeper teal for gradient */
+        --accent-contrast: #073c37; /* text color over accent */
+        --input-bg: #0b1324; /* input surface */
+        --focus-ring: rgba(45, 212, 191, 0.18); /* accent glow */
+        --qr-bg: #ffffff; /* QR white background */
+        --qr-ink: #121212; /* dark ink for QR */
+        --shadow: rgba(0, 0, 0, 0.35);
       }
+
       * {
         box-sizing: border-box;
       }
@@ -22,7 +33,7 @@
       }
       body {
         margin: 0;
-        background: #0f172a;
+        background: linear-gradient(180deg, var(--bg), #0c1425 60%, #0a1020);
         color: var(--text);
         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
           Helvetica, Arial;
@@ -36,20 +47,22 @@
         width: 100%;
         max-width: 860px;
         border: 1px solid var(--border);
-        border-radius: 16px;
-        overflow: hidden; /* prevent inner overflow */
-        background: #111827;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--surface-2);
+        box-shadow: 0 22px 44px var(--shadow);
       }
 
       .header {
         padding: 16px 20px;
         border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, var(--surface), var(--surface-2));
       }
 
       .title {
         font-size: 20px;
         font-weight: 700;
+        letter-spacing: 0.2px;
       }
 
       .content {
@@ -82,11 +95,9 @@
         transform: translateY(-4px);
         transition: opacity 0.4s ease, transform 0.4s ease;
       }
-
       .hint.center {
         text-align: center;
       }
-
       .hint.visible {
         opacity: 1;
         transform: translateY(0);
@@ -110,14 +121,20 @@
         padding: 12px 14px;
         border-radius: 12px;
         border: 1px solid var(--border);
-        background: #0b1223;
+        background: var(--input-bg);
         color: var(--text);
         outline: none;
-        min-width: 0; /* allow flex to shrink */
+        min-width: 0;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease,
+          background 0.2s ease;
+      }
+      input[type="text"]::placeholder {
+        color: #7c8798;
       }
       input[type="text"]:focus {
         border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        box-shadow: 0 0 0 3px var(--focus-ring);
+        background: #0c1628;
       }
 
       button {
@@ -125,26 +142,37 @@
         padding: 12px 14px;
         border-radius: 12px;
         border: 1px solid var(--border);
-        background: linear-gradient(180deg, var(--accent), #10b981);
-        color: #052e1e;
+        background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+        color: var(--accent-contrast);
         font-weight: 700;
         cursor: pointer;
-        white-space: nowrap; /* prevent weird line breaks */
+        white-space: nowrap;
+        transition: transform 0.06s ease-in-out, filter 0.15s ease,
+          box-shadow 0.15s ease;
+        box-shadow: 0 6px 14px rgba(20, 184, 166, 0.25);
+      }
+      button:hover {
+        filter: brightness(1.03);
+      }
+      button:active {
+        transform: translateY(1px);
+        box-shadow: 0 4px 10px rgba(20, 184, 166, 0.22);
       }
       @media (max-width: 520px) {
         button {
-          width: 100%; /* full-width on narrow screens */
+          width: 100%;
         }
       }
-
       button:disabled {
-        opacity: 0.6;
+        opacity: 0.65;
         cursor: not-allowed;
+        filter: saturate(0.85);
+        box-shadow: none;
       }
 
       .error {
         font-size: 12px;
-        color: #fca5a5;
+        color: #f8b4b4; /* gentler than #fca5a5 */
         min-height: 16px;
         margin-top: 6px;
       }
@@ -154,18 +182,16 @@
         color: var(--muted);
         word-break: break-all;
         padding: 8px 12px;
-        background: #0b1223;
+        background: var(--input-bg);
         border: 1px solid var(--border);
         border-radius: 12px;
         margin-top: 8px;
       }
-
       .url a {
         color: var(--accent);
         text-decoration: none;
         font-weight: 600;
       }
-
       .url a:hover {
         text-decoration: underline;
       }
@@ -189,23 +215,22 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #ffffff;
+        background: var(--qr-bg);
         border-radius: 16px;
         border: 1px solid #e5e7eb;
         padding: 16px;
         width: 100%;
         max-width: 100%;
-        overflow: hidden; /* keep inner content contained */
+        overflow: hidden;
       }
 
-      /* Responsive canvas: render at high resolution but scale to fit container */
       canvas {
         display: block;
         width: 100%;
         height: auto;
-        max-width: 480px; /* cap width on large screens */
+        max-width: 480px;
         image-rendering: pixelated;
-        background: #ffffff;
+        background: var(--qr-bg);
         border-radius: 8px;
       }
     </style>
@@ -280,7 +305,6 @@
       const buildUrl = (n) => `https://wa.me/91${n}`;
 
       function drawToCanvasFromQRCode(qr, canvas, size) {
-        // Render at intrinsic square pixels
         canvas.width = size;
         canvas.height = size;
 
@@ -293,10 +317,16 @@
         const cell = Math.floor(size / count);
         const margin = Math.floor((size - cell * count) / 2);
 
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle =
+          getComputedStyle(document.documentElement)
+            .getPropertyValue("--qr-bg")
+            .trim() || "#ffffff";
         ctx.fillRect(0, 0, size, size);
 
-        ctx.fillStyle = "#000000";
+        ctx.fillStyle =
+          getComputedStyle(document.documentElement)
+            .getPropertyValue("--qr-ink")
+            .trim() || "#000000";
         for (let r = 0; r < count; r++) {
           for (let c = 0; c < count; c++) {
             const dark = qr._oQRCode
