@@ -1,0 +1,10 @@
+[project]
+name = "whatsapp-qr-code"
+version = "0.1.0"
+description = "Build qrcode minified file for whatsapp qr code generator"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = ["rjsmin>=1.2.5"]
