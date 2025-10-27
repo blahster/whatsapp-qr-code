@@ -37,15 +37,15 @@
         color: var(--text);
         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
           Helvetica, Arial;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        /* Remove flex centering to avoid cutting off header on mobile */
+        display: block;
         padding: 16px;
       }
 
       .card {
         width: 100%;
         max-width: 860px;
+        margin: 0 auto; /* center horizontally only */
         border: 1px solid var(--border);
         border-radius: 18px;
         overflow: hidden;
@@ -54,6 +54,9 @@
       }
 
       .header {
+        position: sticky; /* keeps header visible at top while scrolling inside the card */
+        top: 0;
+        z-index: 1;
         padding: 16px 20px;
         border-bottom: 1px solid var(--border);
         background: linear-gradient(180deg, var(--surface), var(--surface-2));
@@ -221,14 +224,19 @@
         padding: 16px;
         width: 100%;
         max-width: 100%;
-        overflow: hidden;
+        overflow: auto; /* allow inner scroll instead of pushing layout */
+        max-height: calc(
+          100svh - 180px
+        ); /* leave room for header/inputs; uses safe viewport height */
       }
 
       canvas {
         display: block;
         width: 100%;
-        height: auto;
         max-width: 480px;
+        height: auto;
+        aspect-ratio: 1 / 1; /* ensure square ratio when browsers compute height */
+        max-height: 70svh; /* never exceed 70% of safe viewport height */
         image-rendering: pixelated;
         background: var(--qr-bg);
         border-radius: 8px;
