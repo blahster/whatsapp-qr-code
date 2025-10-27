@@ -1,4 +1,4 @@
-<!-- filename: index.html -->
+<!-- filename: wa-qr.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,21 +6,20 @@
     <title>WhatsApp QR (India)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-      /* Palette: deep navy background, softer teal accent, gentle neutrals */
       :root {
-        --bg: #0b1220; /* slightly deeper than before */
-        --surface: #0f172a; /* card background */
-        --surface-2: #111827; /* darker inner surface */
-        --text: #e6edf5; /* soft off-white */
-        --muted: #9aa3b2; /* cooler gray for hints */
-        --border: #1f2a37; /* card borders */
-        --accent: #2dd4bf; /* softer teal (was harsh green) */
-        --accent-dark: #14b8a6; /* deeper teal for gradient */
-        --accent-contrast: #073c37; /* text color over accent */
-        --input-bg: #0b1324; /* input surface */
-        --focus-ring: rgba(45, 212, 191, 0.18); /* accent glow */
-        --qr-bg: #ffffff; /* QR white background */
-        --qr-ink: #121212; /* dark ink for QR */
+        --bg: #0b1220;
+        --surface: #0f172a;
+        --surface-2: #111827;
+        --text: #e6edf5;
+        --muted: #9aa3b2;
+        --border: #1f2a37;
+        --accent: #2dd4bf;
+        --accent-dark: #14b8a6;
+        --accent-contrast: #073c37;
+        --input-bg: #0b1324;
+        --focus-ring: rgba(45, 212, 191, 0.18);
+        --qr-bg: #ffffff;
+        --qr-ink: #121212;
         --shadow: rgba(0, 0, 0, 0.35);
       }
 
@@ -31,13 +30,13 @@
       body {
         height: 100%;
       }
+
       body {
         margin: 0;
         background: linear-gradient(180deg, var(--bg), #0c1425 60%, #0a1020);
         color: var(--text);
         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
           Helvetica, Arial;
-        /* Remove flex centering to avoid cutting off header on mobile */
         display: block;
         padding: 16px;
       }
@@ -45,7 +44,7 @@
       .card {
         width: 100%;
         max-width: 860px;
-        margin: 0 auto; /* center horizontally only */
+        margin: 0 auto;
         border: 1px solid var(--border);
         border-radius: 18px;
         overflow: hidden;
@@ -54,7 +53,7 @@
       }
 
       .header {
-        position: sticky; /* keeps header visible at top while scrolling inside the card */
+        position: sticky;
         top: 0;
         z-index: 1;
         padding: 16px 20px;
@@ -161,11 +160,13 @@
         transform: translateY(1px);
         box-shadow: 0 4px 10px rgba(20, 184, 166, 0.22);
       }
+
       @media (max-width: 520px) {
         button {
           width: 100%;
         }
       }
+
       button:disabled {
         opacity: 0.65;
         cursor: not-allowed;
@@ -175,7 +176,7 @@
 
       .error {
         font-size: 12px;
-        color: #f8b4b4; /* gentler than #fca5a5 */
+        color: #f8b4b4;
         min-height: 16px;
         margin-top: 6px;
       }
@@ -190,6 +191,12 @@
         border-radius: 12px;
         margin-top: 8px;
       }
+
+      /* Hidden utility class */
+      .hidden {
+        display: none !important;
+      }
+
       .url a {
         color: var(--accent);
         text-decoration: none;
@@ -212,6 +219,9 @@
         .actions button {
           width: 100%;
         }
+        .actions #download {
+          display: none;
+        }
       }
 
       .qr-card {
@@ -224,10 +234,21 @@
         padding: 16px;
         width: 100%;
         max-width: 100%;
-        overflow: auto; /* allow inner scroll instead of pushing layout */
-        max-height: calc(
-          100svh - 180px
-        ); /* leave room for header/inputs; uses safe viewport height */
+        overflow: auto;
+        max-height: calc(100svh - 180px);
+      }
+
+      .mobile-download {
+        display: none;
+        margin-top: 10px;
+      }
+      @media (max-width: 520px) {
+        .mobile-download {
+          display: block;
+        }
+        .mobile-download button {
+          width: 100%;
+        }
       }
 
       canvas {
@@ -235,8 +256,8 @@
         width: 100%;
         max-width: 480px;
         height: auto;
-        aspect-ratio: 1 / 1; /* ensure square ratio when browsers compute height */
-        max-height: 70svh; /* never exceed 70% of safe viewport height */
+        aspect-ratio: 1 / 1;
+        max-height: 70svh;
         image-rendering: pixelated;
         background: var(--qr-bg);
         border-radius: 8px;
@@ -263,32 +284,36 @@
             <button id="generate" type="button">Generate</button>
           </div>
           <div id="error" class="error"></div>
-          <div id="urlHint" class="hint" style="display: none">
+          <div id="urlHint" class="hint hidden">
             Click the link to open in WhatsApp
           </div>
-          <div id="url" class="url"></div>
-          <div class="actions">
+          <!-- Hidden until populated -->
+          <div id="url" class="url hidden"></div>
+
+          <!-- Actions (hidden until populated) -->
+          <div id="actions" class="actions hidden">
             <button id="copyUrl" disabled>Copy URL</button>
             <button id="download" disabled>Download PNG</button>
           </div>
         </div>
 
         <div>
-          <div
-            id="qrHint"
-            class="hint"
-            style="display: none; margin-bottom: 12px"
-          >
+          <div id="qrHint" class="hint hidden" style="margin-bottom: 12px">
             Point your phone camera at the QR and click the link to open in
             WhatsApp
           </div>
-          <div class="qr-card">
+          <!-- Hide QR container on load; show only after generating -->
+          <div id="qrContainer" class="qr-card hidden">
             <canvas
               id="qrCanvas"
               width="480"
               height="480"
               aria-label="QR code"
             ></canvas>
+          </div>
+          <!-- Mobile-only Download button appears below QR on small screens; hidden until populated -->
+          <div id="mobileDownload" class="mobile-download hidden">
+            <button id="downloadMobile" disabled>Download PNG</button>
           </div>
         </div>
       </div>
@@ -303,9 +328,13 @@
       const urlEl = document.getElementById("url");
       const urlHintEl = document.getElementById("urlHint");
       const qrHintEl = document.getElementById("qrHint");
+      const qrContainerEl = document.getElementById("qrContainer");
       const canvas = document.getElementById("qrCanvas");
+      const actionsEl = document.getElementById("actions");
+      const mobileDownloadEl = document.getElementById("mobileDownload");
       const copyUrlBtn = document.getElementById("copyUrl");
       const downloadBtn = document.getElementById("download");
+      const downloadMobileBtn = document.getElementById("downloadMobile");
 
       let lastUrl = "";
 
@@ -325,16 +354,14 @@
         const cell = Math.floor(size / count);
         const margin = Math.floor((size - cell * count) / 2);
 
-        ctx.fillStyle =
-          getComputedStyle(document.documentElement)
-            .getPropertyValue("--qr-bg")
-            .trim() || "#ffffff";
-        ctx.fillRect(0, 0, size, size);
+        const styles = getComputedStyle(document.documentElement);
+        const qrBg = styles.getPropertyValue("--qr-bg").trim() || "#ffffff";
+        const qrInk = styles.getPropertyValue("--qr-ink").trim() || "#000000";
 
-        ctx.fillStyle =
-          getComputedStyle(document.documentElement)
-            .getPropertyValue("--qr-ink")
-            .trim() || "#000000";
+        ctx.fillStyle = qrBg;
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = qrInk;
+
         for (let r = 0; r < count; r++) {
           for (let c = 0; c < count; c++) {
             const dark = qr._oQRCode
@@ -347,14 +374,57 @@
         }
       }
 
+      function hideOutputs() {
+        // URL box
+        urlEl.innerHTML = "";
+        urlEl.classList.add("hidden");
+
+        // Hints
+        urlHintEl.classList.remove("visible");
+        qrHintEl.classList.remove("visible");
+        urlHintEl.classList.add("hidden");
+        qrHintEl.classList.add("hidden");
+
+        // Actions row
+        actionsEl.classList.add("hidden");
+        copyUrlBtn.disabled = true;
+        downloadBtn.disabled = true;
+
+        // QR container
+        qrContainerEl.classList.add("hidden");
+
+        // Mobile download
+        mobileDownloadEl.classList.add("hidden");
+        downloadMobileBtn.disabled = true;
+      }
+
+      function showOutputsAfterGenerate() {
+        // Show URL
+        urlEl.classList.remove("hidden");
+
+        // Show hints
+        urlHintEl.classList.remove("hidden");
+        qrHintEl.classList.remove("hidden");
+        urlHintEl.classList.add("visible");
+        qrHintEl.classList.add("visible");
+
+        // Show QR container
+        qrContainerEl.classList.remove("hidden");
+
+        // Show actions row and enable buttons
+        actionsEl.classList.remove("hidden");
+        copyUrlBtn.disabled = false;
+        downloadBtn.disabled = false;
+
+        // Show mobile download and enable button
+        mobileDownloadEl.classList.remove("hidden");
+        downloadMobileBtn.disabled = false;
+      }
+
       function generate() {
         const raw = phoneInput.value.trim();
         errorEl.textContent = "";
-        urlEl.innerHTML = "";
-        urlHintEl.classList.remove("visible");
-        qrHintEl.classList.remove("visible");
-        urlHintEl.style.display = "none";
-        qrHintEl.style.display = "none";
+        hideOutputs();
 
         if (!validatePhone(raw)) {
           errorEl.textContent = "Please enter exactly 10 digits (0–9).";
@@ -364,13 +434,10 @@
         const url = buildUrl(raw);
         lastUrl = url;
 
+        // Populate URL
         urlEl.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
 
-        urlHintEl.classList.add("visible");
-        qrHintEl.classList.add("visible");
-        urlHintEl.style.display = "block";
-        qrHintEl.style.display = "block";
-
+        // Build QR
         const tempDiv = document.createElement("div");
         const qr = new QRCode(tempDiv, {
           text: url,
@@ -380,10 +447,10 @@
           colorLight: "#ffffff",
           correctLevel: QRCode.CorrectLevel.Q,
         });
-
         drawToCanvasFromQRCode(qr, canvas, 480);
-        copyUrlBtn.disabled = false;
-        downloadBtn.disabled = false;
+
+        // Reveal UI
+        showOutputsAfterGenerate();
       }
 
       function copyUrl() {
@@ -409,11 +476,15 @@
         document.body.removeChild(a);
       }
 
-      // Digits-only and Enter key
       phoneInput.addEventListener("input", (e) => {
         e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
-        if (e.target.value.length === 10) errorEl.textContent = "";
+        if (e.target.value.length < 10) {
+          hideOutputs();
+        } else {
+          errorEl.textContent = "";
+        }
       });
+
       phoneInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -424,6 +495,7 @@
       generateBtn.addEventListener("click", generate);
       copyUrlBtn.addEventListener("click", copyUrl);
       downloadBtn.addEventListener("click", downloadPNG);
+      downloadMobileBtn.addEventListener("click", downloadPNG);
     </script>
   </body>
 </html>
